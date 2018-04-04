@@ -12,7 +12,7 @@
 <body>
   <div class="container">
   	<h1>UTA Analyzer</h1>
-  	<p>Enter the UTA route number.</p>
+  	<p>Map current location of vehicles for a specific route. Map all current vehicles. Map all vehicles stops.</p>
 
 		<div class="form-row">
 		  <div class="form-group row">
@@ -53,8 +53,8 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-  <script src="http://goessner.net/download/prj/jsonxml/xml2json.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jxon/1.6.1/index.min.js"></script>
   <script type="text/javascript">
   	const routes = ["2","3","6","9","11","17","21","33","35","39","41","45","47","54","62","72","200","201","205","209","213","217","218","220","223","227","228","232","240","248","307","313","320","354","451","453","454","455","456","460","461","462","463","470","471","472","473","477","500","509","513","516","519","520","525","526","551","603","604","606","608","612","613","616","625","626","627","630","640","645","650","664","665","667","674","675","701","703","704","720","750","805","806","807","811","821","822","830","831","832","833","834","835","836","838","840","841","842","850","862","863","880","901","902","919","920","951","952","953","954","960","962","990","992","2X","35M","F400","F401","F402","F504","F514","F518","F522","F534","F546","F547","F556","F570","F578","F590","F618","F638","F94"]
 		let ajaxQueue = [];
@@ -72,13 +72,12 @@
 		$('.getroute').click(function() {
 			getRouteVehicles($('#route').val(), function(vehicles) {
 				for (var i = 0; i < vehicles.length; i++) {
-					let lat = vehicles[i].VehicleLocation.Latitude;
-					let lon = vehicles[i].VehicleLocation.Longitude;
+					let lat = vehicles[i].vehiclelocation.latitude;
+					let lon = vehicles[i].vehiclelocation.longitude;
 					let line = vehicles[i].LineRef;
 					let lineName = vehicles[i].PublishedLineName;
 					let direction = vehicles[i].DirectionRef;
-					// var marker = L.marker([vehicles[i].VehicleLocation.Latitude, vehicles[i].VehicleLocation.Longitude]);
-					L.circleMarker([lat, lon], {color: '#3388ff'}).addTo(map).bindPopup(line+' '+lineName+' -> '+direction);
+					L.circleMarker([lat, lon], {color: '#3388ff', radius: 3}).addTo(map).bindPopup(line+' '+lineName+' -> '+direction);
 				}
 			});
 		});
@@ -88,13 +87,12 @@
 			for (var i = 0; i < routes.length; i++) {
 				getRouteVehicles(routes[i], function(vehicles) {
 					for (var i = 0; i < vehicles.length; i++) {
-						let lat = vehicles[i].VehicleLocation.Latitude;
-						let lon = vehicles[i].VehicleLocation.Longitude;
+						let lat = vehicles[i].vehiclelocation.latitude;
+						let lon = vehicles[i].vehiclelocation.longitude;
 						let line = vehicles[i].LineRef;
 						let lineName = vehicles[i].PublishedLineName;
 						let direction = vehicles[i].DirectionRef;
-						// var marker = L.marker([vehicles[i].VehicleLocation.Latitude, vehicles[i].VehicleLocation.Longitude]);
-						L.circleMarker([lat, lon], {color: '#33cc33'}).addTo(map).bindPopup(line+' '+lineName+' -> '+direction);
+						L.circleMarker([lat, lon], {color: '#33cc33', radius: 2}).addTo(map).bindPopup(line+' '+lineName+' -> '+direction);
 					}
 				});
 			}
@@ -106,7 +104,7 @@
 				var stops = $.csv.toObjects(rsp);
 				$('.count').text(stops.length);
 				for (var i = 0; i < stops.length; i++) {
-					L.circleMarker([stops[i].stop_lat, stops[i].stop_lon], {color: '#ff9999'}).addTo(map).bindPopup(stops[i].stop_name);
+					L.circleMarker([stops[i].stop_lat, stops[i].stop_lon], {color: '#ff9999', radius: 1}).addTo(map).bindPopup(stops[i].stop_name);
 				}
 			});
 		});
@@ -116,12 +114,13 @@
   		let url = 'https://crossorigin.me/http://api.rideuta.com/SIRI/SIRI.svc/VehicleMonitor/ByRoute?route='+id+'&onwardcalls=true&usertoken=UNBJGBQBXCW';
   		ajaxQueue.push(function() {
 				$.get(url, function(rsp) {
-					let uta = JSON.parse(xml2json(rsp).replace("undefined", ""));
-					let vehicles = uta.Siri.VehicleMonitoringDelivery.VehicleActivity.MonitoredVehicleJourney;
+					let uta = JXON.build(rsp);
+					console.log(uta);
+					let vehicles = uta.siri.vehiclemonitoringdelivery.vehicleactivity.monitoredvehiclejourney;
 					// Create an empty array for no active vehicles
 					if (!vehicles) vehicles = [];
 					// Create an array if only ONE active vehicle
-					if (vehicles.VehicleRef) vehicles = [vehicles];
+					if (vehicles.vehicleref) vehicles = [vehicles];
 
 					console.log(vehicles.length, vehicles);
 
