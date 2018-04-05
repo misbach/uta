@@ -113,7 +113,7 @@
   	function getRouteVehicles(id, callback) {
   		// let proxy = 'https://crossorigin.me/http://api.rideuta.com/SIRI/SIRI.svc/VehicleMonitor/ByRoute?route='+id+'&onwardcalls=true&usertoken=UNBJGBQBXCW'; 
   		// let proxy = 'http://cors-proxy.htmldriven.com/?url='+encodeURIComponent('http://api.rideuta.com/SIRI/SIRI.svc/VehicleMonitor/ByRoute?route='+id+'&onwardcalls=true&usertoken=UNBJGBQBXCW'); 
-  		let proxy = 'http://cors-anywhere.herokuapp.com/http://api.rideuta.com/SIRI/SIRI.svc/VehicleMonitor/ByRoute?route='+id+'&onwardcalls=true&usertoken=UNBJGBQBXCW'; 
+  		let proxy = 'https://cors-anywhere.herokuapp.com/http://api.rideuta.com/SIRI/SIRI.svc/VehicleMonitor/ByRoute?route='+id+'&onwardcalls=true&usertoken=UNBJGBQBXCW'; 
   		let url = proxy;
   		ajaxQueue.push(function() {
 				$.get(url, function(rsp) {
