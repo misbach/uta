@@ -62,9 +62,11 @@
   	let count = 0;
 
 		var map = L.map('mapid', {preferCanvas: true}).setView([40.862247, -111.909935], 9);
-		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+		L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+			tileSize: 512,
 			maxZoom: 18,
-			id: 'mapbox.streets',
+			zoomOffset: -1,
+			id: 'mapbox/streets-v11',
 			accessToken: 'pk.eyJ1IjoibWlzYmFjaCIsImEiOiJjamZpcnZ0bXUwMHpyMzNwZmw3NzlzaGR1In0.I5SDAbWV7lnkaK_jCPNLQQ'
 		}).addTo(map);
 
